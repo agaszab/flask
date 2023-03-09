@@ -11,9 +11,11 @@
         
         <body>
 <h1 style="color: #5e9ca0;">Dane archiwalne</h1>
-{{list}}
-
-
+<ul>
+{% for item in list %}
+<li>PLN -> {{item[1]}}, USD -> {{item[2]}}, data -> {{item[3]}} </li>
+{% endfor %}
+</ul>
 
 <h2 style="color: #2e6c80;">wybierz linki:</h2>
 <p>Jakis tam przykładowy tekst na stronę</p>

@@ -76,7 +76,7 @@ def index():
     list = pokaz("SELECT * FROM kursy")
     print(list)
     return render_template('index.html', list=list)
-#    return render_template('index.html', form=form)
+
 
 if __name__ == '__main__':
     app.run()
