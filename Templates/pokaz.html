@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kursy walut</title>
+    <link rel="shortcut icon" href="#" />
+</head>
+<body>
+<table>
+    <tr>
+        <td>PLN</td>
+        <td>USD</td>
+        <td>data</td>
+    </tr>
+    {% for item in list %}
+     <tr><td>PLN -> {{item[1]}}</td> <td>USD -> {{item[2]}}</td> <td>data -> {{item[3]}}</td> </tr>
+    {% endfor %}
+</table>
+<ul>
+{% for item in list %}
+<li>PLN -> {{item[1]}}, USD -> {{item[2]}}, data -> {{item[3]}} </li>
+{% endfor %}
+
+</ul>
+
+<a href="javascript: history.go(-1)">Powrót .</a>
+
+</body>
+</html>

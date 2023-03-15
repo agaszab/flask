@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <title>Kursy walut</title>
     <link rel="shortcut icon" href="#" />
-    <link rel="stylesheet" href="all.min.css" />
 </head>
 <body>
-Obecny kurs złota: <br>
-USD: {{kurs[1]}} <br>
-PL: {{kurs[0]}} <br>
-został wstawiony do bazy<br><br>
+<ul>
+{% for item in list %}
+<li>PLN -> {{item[1]}}, USD -> {{item[2]}}, data -> {{item[3]}} </li>
+{% endfor %}
+
+</ul>
 <a href="javascript: history.go(-1)">Powrót .</a>
 </body>
 </html>

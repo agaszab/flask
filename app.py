@@ -1,9 +1,11 @@
-from flask import Flask, render_template, url_for, request  #render_template umożliwia nam korzystanie z templatków
+from flask import Flask, render_template, url_for, request, redirect  #render_template umożliwia nam korzystanie z templatków
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField , BooleanField   # bo nasz formularz wtf będzie miał pola string
 import mysql.connector
 import requests
 import bs4
+import pandas as pd
+import matplotlib.pyplot as plt
 
 app = Flask(__name__)  # __name__ oznacza, że jest to ta strona jest do zarządzania, tworzymy instancję klasy flaskowej
 app.config['SECRET_KEY'] = 'AComplicat3dTest.'
@@ -17,7 +19,7 @@ class BookForm(FlaskForm):
     title = StringField('Book title')
     amount = IntegerField('Amount')
     available = BooleanField('Available')
-def pokaz(sql):
+def pokaz_kurs(sql):
   mycursor.execute(sql)
   myresult = mycursor.fetchall()
   kursy=[]
@@ -49,64 +51,60 @@ def pobiez():
   gold_rate_pl = gold_rate_pl[:4] + '.' + gold_rate_pl[5:]
   return gold_rate, gold_rate_pl
 
-def wstaw(kurs_pl, kurs_usd, mydb):
+def wstaw_kurs(kurs_pl, kurs_usd, mydb):
   sql=f"INSERT INTO kursy(kursy_pl, kursy_usd, data, godzina) VALUES ({str(kurs_pl)}, {str(kurs_usd)}, CURDATE(), CURTIME())"
   cursor = mydb.cursor()
   cursor.execute(sql)
   mydb.commit()
 
+def wykres_zlota():
+    my_data = pd.read_sql("SELECT * FROM kursy", mydb)
+#    gold_rate = pd.read_csv('zloto.csv', sep=';', index_col=['data', 'godzina'], header=0)  # index_col - co ma być indeksem
+    print(my_data)
+    df = pd.DataFrame(my_data)
+    return df
 @app.route('/', methods=['GET','POST'])     #tu będzie z obsługą flask_wtf
 def index():
-    
-    # form = BookForm()
-    #
-    # if form.validate_on_submit():     # jeśli tak funkcja jest true to znaczy, że user przesłał nam w miarę poprawne dane
-    #     return f'''   <h1>Dane</h1>
-    #         <ul>
-    #             <ol> {form.title.label}:{form.title.data}</ol>
-    #             <ol> {form.amount.label}:{form.amount.data}</ol>
-    #             <ol> {form.available.label}:{form.available.data}</ol>
-    #         </ul>
-    #
-    #
-    #     '''
 
-#    kurs = pobiez()
- #   wstaw(kurs[1], kurs[0], mydb)
-    list = pokaz("SELECT * FROM kursy")
-    print(list)
-    return render_template('index.html', list=list)
-
-
-if __name__ == '__main__':
-    app.run()
-
+    # list = pokaz("SELECT * FROM kursy")
+    # print(list)
+    # return render_template('index.html')
+    return render_template('index.html')
 @app.route('/wstaw')
 def wstaw():
 
     kurs = pobiez()
-    wstaw(kurs[1], kurs[0], mydb)
-    return render_template('wstaw.html')
+    wstaw_kurs(kurs[1], kurs[0], mydb)
+    return render_template('wstaw2.html', kurs=kurs)
 
-@app.route('/exchange', methods=['GET','POST'] )   # to do formularza templatka i obsluga bez flask_wtf
-def exchange():
-    if request.method=='GET':
-        return render_template('exchange.html')
-    else:
-        currency = 'EUR'
-        if 'currency' in request.form:
-            currency = request.form['currency']
-        
-        amount = 100
-        if 'amount' in request.form:
-            amount = request.form['amount']
-        
-        name="Nie podane"
-        if 'name' in request.form:
-            name = request.form['name']
+@app.route('/aktualny')
+def aktualny():
 
-        return render_template('result.html', currency=currency, amount=amount, name=name)
+    kurs = pobiez()
+    wstaw_kurs(kurs[1], kurs[0], mydb)
+    return render_template('aktualny2.html', kurs=kurs)
+@app.route('/pokaz')
+def pokaz():
+    list = pokaz_kurs("SELECT * FROM kursy")
+    print(list)
+    return render_template('pokaz2.html', list=list)
+@app.route('/wykres')
+def wykres():
+    my_data = pd.read_sql("SELECT * FROM kursy", mydb, index_col=['data', 'godzina'])
+    df = pd.DataFrame(my_data, columns=['kursy_pl', 'kursy_usd'])
+#    df.plot(figsize=(13,5), title="cos tam", subplots=True, linestyle='-.', xticks=(range(30)), grid=True, rot=45 )
+    df.plot(figsize=(13, 5), title="Kurs złota", subplots=True, linestyle='-.', grid=True, rot=45)
 
+
+    for ax in plt.gcf().axes:
+        ax.legend(loc=1)
+    plt.show()
+    return render_template('wykres.html')
+
+
+#    return render_template('pokaz.html', list=list)
+if __name__ == '__main__':
+    app.run()
 
 
 
