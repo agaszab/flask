@@ -6,12 +6,9 @@
     <link rel="shortcut icon" href="#" />
 </head>
 <body>
-<ul>
-{% for item in list %}
-<li>PLN -> {{item[1]}}, USD -> {{item[2]}}, data -> {{item[3]}} </li>
-{% endfor %}
 
-</ul>
+<img src="{{ url_for('static', filename='output.jpg') }}">
+
 <a href="javascript: history.go(-1)">Powrót .</a>
 </body>
 </html>

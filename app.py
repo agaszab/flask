@@ -24,9 +24,9 @@ def pokaz_kurs(sql):
   myresult = mycursor.fetchall()
   kursy=[]
   for x in myresult:
-    kurs=[x[0],x[1],x[2],x[3]]
+    kurs=[x[0],x[1],x[2],x[3],x[4]]
     kursy.append(kurs)
-    print(str(x[0])+" USD, ",str(x[1])+" PL, -> ",x[2],x[3])
+    print(str(x[0])+" USD, ",str(x[1])+" PL, -> ",x[2],x[3],x[4])
   print(myresult)
   return kursy
 
@@ -98,9 +98,12 @@ def wykres():
 
     for ax in plt.gcf().axes:
         ax.legend(loc=1)
-    plt.show()
-    return render_template('wykres.html')
+    #     plt.show()
+    plt.savefig("static/output.jpg")  # save as jpg
+    return render_template('wykres2.html')
 
+# plt.savefig("output.jpg") #save as jpg
+# plt.savefig("output.png") #save as png
 
 #    return render_template('pokaz.html', list=list)
 if __name__ == '__main__':
